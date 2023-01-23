@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from rest_framework import serializers
-from rest_framework.validators import ValidationError
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
