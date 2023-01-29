@@ -1,156 +1,73 @@
-# YaMDb API
+# **YaMDb API**
+### **Описание:**
+Проект **YaMDb** собирает отзывы пользователей на произведения. Произведения делятся на категории: «Книги», «Фильмы», «Музыка». К отзыву можно оставить комментарий.
+___
 
-## Описание
-Учебный командный проект **YaMDb** собирает отзывы пользователей на произведения. Произведения делятся на категории: «Книги», «Фильмы», «Музыка». К отзыву можно оставить комментарий.
+### **Технологии:**
++ python 3.7.16;
++ django 2.2;
++ unnittest django;
++ docker;
++ docker-compose;
++ nginx;
++ postgreSQL;
++ gunicorn.
+___
 
+### **Как запустить проект в docker конейнере:**
 
-## Как развернуть проект на локальной машине:
-
-
-* Склонировать репозиторий:
-```
-git clone https://github.com/fog-contributor/api_yamdb.git
-```
-
-```
-cd api_yamdb
-```
-
-* Cоздать виртуальное окружение:
-```
-python3 -m venv venv
-```
-* Активировать виртуальное окружение:
-```
-source env/bin/activate
-```
-* Обновить пакетный менеджер: 
-```
-python -m pip install --upgrade pip
-```
-
-* Установить зависимости из файла requirements.txt:
+Клонировать репозиторий:
 
 ```
-pip install -r requirements.txt
+git clone git@github.com:Stas767/infra_sp2.git
 ```
-
-* Выполнить миграции:
-
-```
-python manage.py migrate
-```
-
-* Запустить проект:
+Перейти в папку с docker-compose:
 
 ```
-python manage.py runserver
+cd infra_sp2/infra
 ```
-* Заполнить БД тестовыми данными из csv-таблиц.
+Запустить docker-compose командой:
 ```
-python3 manage.py add_csv
-```
-## Примеры запросов:
-### Запрос к произведению:
-```
-    [GET] /api/v1/titles/1/
-```
-### Ответ:
-```
-    {
-    "id": 1,
-    "name": "Побег из Шоушенка",
-    "year": 1994,
-    "description": "",
-    "genre": [
-        {
-            "name": "Драма",
-            "slug": "drama"
-        }
-    ],
-    "category": {
-        "name": "Фильм",
-        "slug": "movie"
-    },
-    "rating": 10.0
-}
-```
-### Запрос к отзывам на произведение:
-
-```
-    [GET] /api/v1/titles/1/reviews/
-```
-### Ответ:
-```
-{
-    "count": 2,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "id": 2,
-            "text": "Не привыкай\n«Эти стены имеют одно свойство: сначала ты их ненавидишь, потом привыкаешь, а потом не можешь без них жить»",
-            "author": "capt_obvious",
-            "score": 10,
-            "pub_date": "2022-10-25T12:38:39.707082Z"
-        },
-        {
-            "id": 1,
-            "text": "Ставлю десять звёзд!\n...Эти голоса были чище и светлее тех, о которых мечтали в этом сером, убогом месте. Как будто две птички влетели и своими голосами развеяли стены наших клеток, и на короткий миг каждый человек в Шоушенке почувствовал себя свободным.",
-            "author": "bingobongo",
-            "score": 10,
-            "pub_date": "2022-10-25T12:38:39.701077Z"
-        }
-    ]
-}
+docker-compose up -d
 ```
 
-### Запрос к комментариям отзыва:
+Выполнить миграции:
 
 ```
-    [GET] /api/v1/titles/5/reviews/6/comments/
-```
-### Ответ:
-```
-   {
-    "count": 3,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "id": 3,
-            "text": "Кстати, а что такое \"четверть фунта\"? В граммах это сколько?",
-            "author": "reviewer",
-            "pub_date": "2022-10-25T12:38:40.173184Z"
-        },
-        {
-            "id": 2,
-            "text": "Ну надо же, не нашлось ничего лучшего, кроме как прокомментировать разговор про гамбургеры, будто в фильме ничего важнее этого нет",
-            "author": "capt_obvious",
-            "pub_date": "2022-10-25T12:38:40.167695Z"
-        },
-        {
-            "id": 1,
-            "text": "Ничего подобного, в фильме всё не так, и программирование тут вообще ни при чём!",
-            "author": "faust",
-            "pub_date": "2022-10-25T12:38:40.161874Z"
-        }
-    ]
-}
+docker-compose exec web python manage.py migrate
 ```
 
-## Стек технологий:
-* Python 3.9
-* Django 2.2.16
-* SimpleJWT
-* Django filter 2.4
-* SQLite3
+Создать суперпользователя:
 
-## Авторы:
-* Аркадий Крылов https://github.com/fog-contributor
-* Станислав Балджи https://github.com/Stas767
-* Игорь Жук https://github.com/ig0r-zhuk
+```
+docker-compose exec web python manage.py createsuperuser
+```
+Наполнить базу данных тестовыми записями:
 
+```
+docker-compose exec web python manage.py add_csv
+```
 
+Собрать статику:
+
+```
+docker-compose exec web python manage.py collectstatic --no-input
+```
+Проект доступен по адресу http://localhost/
+___
+### **Шаблон наполнения env-файла**
+```
+DB_ENGINE = указываем, что работаем с postgresql
+DB_NAME= имя базы данных
+POSTGRES_USER= логин для подключения к базе данных
+POSTGRES_PASSWORD= пароль для подключения к БД (установите свой)
+DB_HOST= название сервиса (контейнера)
+DB_PORT= 
+```
+
+___
+### **Автор:**
+Станислав Балджи
+___
 
 
